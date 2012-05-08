@@ -245,3 +245,60 @@ test('subview.method context', function () {
   ok(this.view.model.get('collection')._callbacks.event5.next.context === this.view.model,
     'context is set');
 });
+
+
+
+
+
+
+
+module('unbind', {
+  setup : function () {
+    this.view = new TestView({
+      backboneEvents : {
+        'event1' : 'method',
+        'event2' : 'method, view',
+        'event3' : 'view.method',
+        'event4' : 'view.method, this',
+        'event5' : 'view.method, model'
+      }
+    });
+  }
+});
+
+test('unbind events', function () {
+
+  var callbacks = this.view._callbacks;
+
+  ok(_.size(callbacks) === 5, 'events are bound');
+
+  this.view.undelegateBackboneEvents();
+
+  ok(_.size(callbacks) === 0, 'events are unbound');
+});
+
+test('rebind events', function () {
+
+  var callbacks = this.view._callbacks;
+
+  this.view.undelegateBackboneEvents();
+
+  ok(_.size(callbacks) === 0, 'events are unbound');
+
+  this.view.delegateBackboneEvents();
+
+  ok(_.size(callbacks) === 5, 'events are rebound');
+});
+
+test('double-bind events', function () {
+
+  var callbacks = this.view._callbacks;
+
+  ok(callbacks.event1.next.callback, 'events are bound');
+
+  this.view.delegateBackboneEvents();
+
+  ok(callbacks.event1.next.callback &&
+     callbacks.event1.next.next.callback === undefined,
+    'events arent bound twice');
+});

@@ -16,6 +16,10 @@
 
     dict || (dict = this.backboneEvents);
 
+    this._backboneEvents || (this._backboneEvents = []);
+
+    this.undelegateBackboneEvents();
+
     for (var key in dict) {
 
       var keys, values, subject, event, method, context;
@@ -89,8 +93,25 @@
         // always fail silently so that events can be added to the dictionary
         // even if the subject only gets created in certain cases. Otherwise, // those cases would always require breaking out of the dictionary and
         // then is isn't as useful because it doesn't hold all the events.
-        if (subject && method && context) subject.on(event, method, context);
+        if (subject && method && context) {
+          subject.on(event, method, context);
+          this._backboneEvents.push([subject, event, method, context]);
+        }
       }
+    }
+  };
+
+  Backbone.Model.prototype.undelegateBackboneEvents =
+  Backbone.Collection.prototype.undelegateBackboneEvents =
+  Backbone.Router.prototype.undelegateBackboneEvents =
+  Backbone.View.prototype.undelegateBackboneEvents =
+  function undelegateBackboneEvents() {
+
+    if (!this._backboneEvents || this._backboneEvents.length === 0) return;
+
+    // Loop over the stored bindings and call subject.off()
+    for (var i = 0, args; args = this._backboneEvents[i]; i++) {
+      args[0].off(args[1], args[2], args[3]);
     }
   };
 
