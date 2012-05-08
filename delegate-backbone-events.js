@@ -63,29 +63,33 @@
         var meths = propertySplitter.exec(value[0]);
 
         // Either a method on a subview or a method on this.
-        method = meths[3] ? this[meths[1]][meths[3]] : this[meths[1]];
+        if (this[meths[1]])
+          method = meths[3] ? this[meths[1]][meths[3]] : this[meths[1]];
 
-        // We need a method.
-        if (!method) throw new Error('Invalid method');
+        if ((this[meths[1]] &&
+             meths[3] &&
+             this[meths[1]][meths[3]] === undefined) ||
+            (this[meths[1]] === undefined &&
+             meths[3] === undefined))
+          throw new Error('Cant find method');
+
+        // Default context.
+        context = this;
 
         // If a context is passed in use it, otherwise if the method has a
         // subject other than this use it's subject, otherwise use this.
-        if (value[1])
-          context = value[1] === 'this' ? this : this[value[1]];
-        else if (meths[3])
-          context = this[meths[1]];
-        else
+        if (value[1] && value[1] === 'this')
           context = this;
+        else if (value[1] && this[value[1]])
+          context = this[value[1]];
+        else if (meths[3] && this[meths[1]])
+          context = this[meths[1]];
 
-        // We need a context.
-        if (!context) throw new Error('Invalid context');
-
-        // Bind to each event in the list. Subject is the only one that fails
-        // silently so that events can be added to the dictionary even if the
-        // subject only gets created in certain cases. Otherwise, those cases
-        // would always require breaking out of the dictionary and then is isn't
-        // as useful because it doesn't hold all the events.
-        if (subject) subject.on(event, method, context);
+        // Bind to each event in the list. Subjects and method/context subjects
+        // always fail silently so that events can be added to the dictionary
+        // even if the subject only gets created in certain cases. Otherwise, // those cases would always require breaking out of the dictionary and
+        // then is isn't as useful because it doesn't hold all the events.
+        if (subject && method && context) subject.on(event, method, context);
       }
     }
   };
