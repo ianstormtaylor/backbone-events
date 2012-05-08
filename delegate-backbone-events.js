@@ -8,104 +8,83 @@
 
 ;(function (Backbone) {
 
-    Backbone.View.prototype.delegateBackboneEvents =
-    function delegateBackboneEvents(eventsDictionary) {
+  Backbone.View.prototype.delegateBackboneEvents =
+  function delegateBackboneEvents(dict) {
 
-        eventsDictionary || (eventsDictionary = this.backboneEvents);
+    dict || (dict = this.backboneEvents);
 
-        for (var key in eventsDictionary) {
+    for (var key in dict) {
 
-            var value = eventsDictionary[key],
-                subject,
-                event,
-                method,
-                context;
+      var keys, values, subject, event, method, context;
 
-            var subjectRegex       = /^\w+\b/               ,
-                subSubjectRegex    = /^(\w+)\.(\w+)\b/      ,
-                eventRegex         = /(?:(?:^\w*\s)|^)(.+)$/,
-                methodSubjectRegex = /^\w+\b/               ,
-                methodMethodRegex  = /(?:\.)(\w+)\b/        ,
-                methodRegex        = /^\w+\b/               ,
-                contextRegex       = /\b\w+$/               ;
+      // A regex to split commas with optional spaces around them.
+      var commaSplitter = /\s*,\s*/;
 
-            // Figure out the key.
-            // Space? then we got a subject other than this.
-            if (/\s/.test(key)) {
-                // Period? then we got a sub-subject.
-                if (/\./.test(key)) {
-                    var subSubject = subSubjectRegex.exec(key);
+      // A regex to split optional, dot-separated, properties.
+      var propertySplitter = /(\w+)(\.(\w+))?/;
 
-                    if (this[subSubject[1]] instanceof Backbone.Model) {
-                        subject = this[subSubject[1]].attributes[subSubject[2]];
-                    }
-                    else {
-                        subject = this[subSubject[1]][subSubject[2]];
-                    }
-                }
-                else {
-                    subject = this[subjectRegex.exec(key)[0]];
-                }
-            }
-            else {
-                subject = this;
-            }
+      keys = key.split(commaSplitter);
 
-            // Event is all or everything after the first break.
-            event = eventRegex.exec(key)[1].split(/\s/);
+      // Default subject.
+      subject = this;
 
-            // Figure out the value.
-            // Make it an array, so we can always just iterate.
-            if (typeof value === 'string') value = [value];
+      // Subject other than this.
+      if (keys.length === 2) {
 
-            for (var i = 0, string; string = value[i]; i++) {
+        // Split subject from sub-subjects.
+        var subjs = propertySplitter.exec(keys[0]);
 
-                // Period? then we got a method not on this.
-                if (/\./.test(string)) {
+        subject = this[subjs[1]];
 
-                    var methodSubject = this[methodSubjectRegex.exec(string)[0]],
-                        methodMethod = methodMethodRegex.exec(string)[1];
+        // Special case to let models listen to their attributes.
+        // Useful only for view models, otherwise its reaching.
+        if (subject instanceof Backbone.Model && subjs[3])
+          subject = subject.attributes[subjs[3]];
+      }
 
-                    if (methodSubject)
-                        method = methodSubject[methodMethod];
+      // The event is either the only thing or the second value.
+      event = keys.length === 1 ? keys[0] : keys[1];
 
-                    // Space? then a context other than the subject.
-                    if (/\s/.test(string)) {
+      // We need an event.
+      if (!event) throw new Error('Invalid event');
 
-                        context = contextRegex.exec(string)[0];
+      // Make sure value is an array, so we can always just iterate.
+      values = typeof dict[key] === 'string' ? [dict[key]] : dict[key];
 
-                        context = (context === 'this' ?
-                            this : this[context]);
-                    }
-                    // Otherwise just use the subject as the context.
-                    else {
-                        context = methodSubject;
-                    }
-                }
-                else {
-                    // Simple method.
-                    method = this[methodRegex.exec(string)[0]];
+      // Iterate over values, binding each one to the subject + event.
+      for (var i = 0, value; value = values[i]; i++) {
 
-                    if (method === undefined) {
-                        console.warn('Tried to bind to undefined method "' + methodRegex.exec(string)[0] + '".');
-                    }
+        value = value.split(commaSplitter);
 
-                    // Space? then there's a context other than this.
-                    context = /\s/.test(string) ?
-                        this[contextRegex.exec(string)[0]] : this;
-                }
+        // Split method-subject from method.
+        var meths = propertySplitter.exec(value[0]);
 
-                // Bind it.
-                if (subject && method && context) {
+        // Either a method on a subview or a method on this.
+        method = meths[3] ? this[meths[1]][meths[3]] : this[meths[1]];
 
-                    // Allow for binding a bunch of events.
-                    for (var j = 0, ev; ev = event[j]; j++) {
+        // We need a method.
+        if (!method) throw new Error('Invalid method');
 
-                        subject.on(ev, method, context);
-                    }
-                }
-            }
-        }
-    };
+        // If a context is passed in use it, otherwise if the method has a
+        // subject other than this use it's subject, otherwise use this.
+        if (value[1])
+          context = value[1] === 'this' ? this : this[value[1]];
+        else if (meths[3])
+          context = this[meths[1]];
+        else
+          context = this;
+
+        // We need a context.
+        if (!context) throw new Error('Invalid context');
+
+        // Bind to each event in the list. Subject is the only one that fails
+        // silently so that events can be added to the dictionary even if the
+        // subject only gets created in certain cases. Otherwise, those cases
+        // would always require breaking out of the dictionary and then is isn't
+        // as useful because it doesn't hold all the events.
+        if (subject) subject.on(event, method, context);
+      }
+    }
+  };
 
 }(Backbone));

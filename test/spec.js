@@ -49,10 +49,10 @@ module('event', {
     this.view = new TestView({
       backboneEvents : {
         'event1' : 'method',
-        'event2' : 'method view',
+        'event2' : 'method, view',
         'event3' : 'view.method',
-        'event4' : 'view.method this',
-        'event5' : 'view.method model'
+        'event4' : 'view.method, this',
+        'event5' : 'view.method, model'
       }
     });
   }
@@ -117,11 +117,11 @@ module('subview event', {
   setup : function () {
     this.view = new TestView({
       backboneEvents : {
-        'view event1' : 'method',
-        'view event2' : 'method view',
-        'view event3' : 'view.method',
-        'view event4' : 'view.method this',
-        'view event5' : 'view.method model'
+        'view, event1' : 'method',
+        'view, event2' : 'method, view',
+        'view, event3' : 'view.method',
+        'view, event4' : 'view.method, this',
+        'view, event5' : 'view.method, model'
       }
     });
   }
@@ -179,83 +179,6 @@ test('subview.method context', function () {
 
 
 
- // backboneEvents : {
- //    'model1 event5'             : 'method3',
- //    'view2.view3 event9'        : 'method8',
- //    'model1.collection1 event6' : 'method4',
- //    'view2.view3 event7'        : 'view3.method7',
- //    'view2.model2 event8'       : 'view2.method8 view1'
- //  }
-
-
-module('subview.subview event', {
-  setup : function () {
-    this.view = new TestView({
-      backboneEvents : {
-        'view.view event1' : 'method',
-        'view.view event2' : 'method view',
-        'view.view event3' : 'view.method',
-        'view.view event4' : 'view.method this',
-        'view.view event5' : 'view.method model'
-      }
-    });
-  }
-});
-
-test('method', function () {
-
-  ok(this.view.view.view._callbacks.event1 !== undefined,
-    'subject and event are set');
-  ok(this.view.view.view._callbacks.event1.next.callback === this.view.method,
-    'method is set');
-  ok(this.view.view.view._callbacks.event1.next.context === this.view,
-    'context is set');
-});
-
-test('method context', function () {
-
-  ok(this.view.view.view._callbacks.event2 !== undefined,
-    'subject and event are set');
-  ok(this.view.view.view._callbacks.event2.next.callback === this.view.method,
-    'method is set');
-  ok(this.view.view.view._callbacks.event2.next.context === this.view.view,
-    'context is set');
-});
-
-test('subview.method', function () {
-
-  ok(this.view.view.view._callbacks.event3 !== undefined,
-    'subject and event are set');
-  ok(this.view.view.view._callbacks.event3.next.callback === this.view.view.method,
-    'method is set');
-  ok(this.view.view.view._callbacks.event3.next.context === this.view.view,
-    'context is set');
-});
-
-test('subview.method context(this)', function () {
-
-  ok(this.view.view.view._callbacks.event4 !== undefined,
-    'subject and event are set');
-  ok(this.view.view.view._callbacks.event4.next.callback === this.view.view.method,
-    'method is set');
-  ok(this.view.view.view._callbacks.event4.next.context === this.view,
-    'context is set');
-});
-
-test('subview.method context', function () {
-
-  ok(this.view.view.view._callbacks.event5 !== undefined,
-    'subject and event are set');
-  ok(this.view.view.view._callbacks.event5.next.callback === this.view.view.method,
-    'method is set');
-  ok(this.view.view.view._callbacks.event5.next.context === this.view.model,
-    'context is set');
-});
-
-
-
-
-
 
 
 
@@ -263,11 +186,11 @@ module('submodel.attribute event', {
   setup : function () {
     this.view = new TestView({
       backboneEvents : {
-        'model.collection event1' : 'method',
-        'model.collection event2' : 'method view',
-        'model.collection event3' : 'view.method',
-        'model.collection event4' : 'view.method this',
-        'model.collection event5' : 'view.method model'
+        'model.collection, event1' : 'method',
+        'model.collection, event2' : 'method, view',
+        'model.collection, event3' : 'view.method',
+        'model.collection, event4' : 'view.method, this',
+        'model.collection, event5' : 'view.method, model'
       }
     });
   }
