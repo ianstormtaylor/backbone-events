@@ -8,6 +8,9 @@
 
 ;(function (Backbone) {
 
+  Backbone.Model.prototype.delegateBackboneEvents =
+  Backbone.Collection.prototype.delegateBackboneEvents =
+  Backbone.Router.prototype.delegateBackboneEvents =
   Backbone.View.prototype.delegateBackboneEvents =
   function delegateBackboneEvents(dict) {
 
