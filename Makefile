@@ -1,5 +1,5 @@
 release:
-		uglifyjs -o delegate-backbone-events.js delegate-backbone-events.min.js
+		uglifyjs -o delegate-backbone-events.min.js delegate-backbone-events.js
 
 tests:
 		open spec/index.html

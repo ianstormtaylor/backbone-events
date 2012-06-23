@@ -1,10 +1,7 @@
 // Delegate Backbone Events - Backbone.js Plugin
 // by Ian Storm Taylor
 //
-// Provides a delegateBackboneEvents() method that allows you to keep all of
-// your event bindings in a `backboneEvents` hash instead of spread everywhere.
-// Which makes it much easier to get a grasp on what events are being triggered
-// where.
+// Provides `delegateBackboneEvents()` and `undelegateBackboneEvents()` methods so you can keep all of your event bindings in a `backboneEvents` hash instead of spread everywhere. Which makes it much easier to get a grasp on what events are being triggered where.
 
 ;(function (Backbone) {
 
