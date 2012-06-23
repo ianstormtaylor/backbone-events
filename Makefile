@@ -1,10 +1,7 @@
-min:
-		java -jar libs/yuicompressor-2.4.8pre.jar -o delegate-backbone-events.min.js delegate-backbone-events.js
+release:
+		uglifyjs -o delegate-backbone-events.js delegate-backbone-events.min.js
 
-test:
-		open test/index.html
+tests:
+		open spec/index.html
 
-test-min:
-		open test/index.min.html
-
-.PHONY: min test test-min
+.PHONY: release tests
