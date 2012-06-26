@@ -1,7 +1,11 @@
 release:
-		uglifyjs -o delegate-backbone-events.min.js delegate-backbone-events.js
+	uglifyjs -o backbone-events.min.js backbone-events.js
 
-tests:
-		open spec/index.html
+test:
+	open test/index.html
 
-.PHONY: release tests
+docs:
+	docco backbone-events.js
+	open docs/backbone-events.html
+
+.PHONY: release test docs

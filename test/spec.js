@@ -2,6 +2,10 @@
 
 (function () {
 
+  Backbone.mixin.events.call(Backbone.Model);
+  Backbone.mixin.events.call(Backbone.Collection);
+  Backbone.mixin.events.call(Backbone.View);
+
   // All the testing classes.
   var TestCollection = Backbone.Collection.extend({
     method : function () {}
