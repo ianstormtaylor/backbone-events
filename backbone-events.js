@@ -7,7 +7,7 @@
   /*global define */
   if (typeof define === 'function' && define.amd) {
     define(['underscore', 'backbone'], function(_, Backbone) {
-      factory(root, _);
+      return factory(root, _);
     });
   }
   else {
