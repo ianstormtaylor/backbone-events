@@ -2,22 +2,12 @@
 //
 //     by Ian Storm Taylor
 //     https://github.com/ianstormtaylor/backbone-events
-;(function (root, factory) {
-  // Set up appropriately for the environment.
-  /*global define */
-  if (typeof define === 'function' && define.amd) {
-    define(['underscore', 'backbone'], function(_, Backbone) {
-      return factory(root, _, Backbone);
-    });
-  }
-  else {
-    if (root.Backbone === undefined) throw new Error('Couldn\'t find Backbone');
-    root.Backbone.mixin || (root.Backbone.mixin = {});
-    root.Backbone.mixin.events = factory(root, root._, root.Backbone);
-  }
-})(this, function (root, _, Backbone) {
+;(function (_, Backbone) {
+  if (_ === undefined) throw new Error('Couldn\'t find Underscore');
+  if (Backbone === undefined) throw new Error('Couldn\'t find Backbone');
 
-  return function () {
+  Backbone.mixin || (Backbone.mixin = {});
+  Backbone.mixin.events = function () {
 
     // Delegates all Backbone events as passed in or as defined in `this.backboneEvents`.
     this.prototype.delegateBackboneEvents = function (events) {
@@ -87,4 +77,4 @@
       }
     };
   };
-});
+}(_, Backbone));
