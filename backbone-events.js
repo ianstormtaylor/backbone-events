@@ -25,6 +25,7 @@
     this.prototype.constructor = function () {
       _constructor.apply(this, arguments);
       this.delegateBackboneEvents();
+      this.trigger('initialize', this);
     };
 
     // Delegates all Backbone events as passed in or as defined in `this.backboneEvents`.
