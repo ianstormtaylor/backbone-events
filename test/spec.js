@@ -27,6 +27,7 @@
       Backbone.View.prototype.constructor.apply(this, arguments);
       _.extend(this.backboneEvents, options.backboneEvents);
       this.delegateBackboneEvents();
+      this.trigger('initialize', this);
     },
     initialize : function () {
       this.view   = new TestSubView();
