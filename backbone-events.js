@@ -21,9 +21,9 @@
 
     // Augmenting `constructor` to delegate Backbone events right after
     // initializing.
-    var _constructor = this.prototype.constructor;
+    var constructor = this.prototype.constructor;
     this.prototype.constructor = function () {
-      _constructor.apply(this, arguments);
+      constructor.apply(this, arguments);
       this.delegateBackboneEvents();
       this.trigger('initialize', this);
     };
