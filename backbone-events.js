@@ -39,13 +39,11 @@
         var subject = this;
         // If we have a subject other than this...
         if (keys.length === 2) {
-          // Split subject from sub-subjects.
+          // Split up sub-subjects. Recursively travel down properties, and allow
+          // for the properties actually being inside a Model's `attributes`.
           var subjects = keys[0].split(propertySplitter);
-          subject = this[subjects[0]];
-          // Recursively travel down properties, and allow for the properties
-          // actually being inside a Model's `attributes`.
-          for (var l = 1, subsubject; subsubject = subjects[l]; l++) {
-            subject = subject instanceof Backbone.Model ? subject.get(subsubject) : subject[subsubject];
+          for (var l = 0, subsubject; subsubject = subjects[l]; l++) {
+            subject = !subject[subsubject] && subject.get ? subject.get(subsubject) : subject[subsubject];
           }
         }
 
